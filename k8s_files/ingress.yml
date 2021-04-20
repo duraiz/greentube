@@ -1,0 +1,15 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: node-example
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+spec:
+  rules:
+  - host: node-example.com
+    http:
+      paths:
+        - path: /
+          backend:
+              serviceName: node-example
+              servicePort: 8081

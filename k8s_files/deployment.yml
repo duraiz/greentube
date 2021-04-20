@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: node-example
+  name: node-example
+spec:
+  replicas: 3
+  strategy:
+   rollingUpdate:
+     maxSurge: 0
+     maxUnavailable: 1
+   type: RollingUpdate 
+  selector:
+    matchLabels:
+      app: node-example
+  template:
+    metadata:
+      labels:
+        app: node-example
+    spec:
+      containers:
+      - name: node-example
+        image: duraiz/greentube
+        env:
+          - name: LANGUAGE
+            valueFrom:
+              configMapKeyRef:
+                name: node-example-config
+                key: LANGUAGE
+        ports:
+        - containerPort: 8081
+        resources:
+          limits:
+            cpu: 500m
+          requests:
+            cpu: 200m
+        livenessProbe:
+          httpGet:
+            path: /health-check
+            port: 8081
+          initialDelaySeconds: 3
+          periodSeconds: 3
+          failureThreshold: 2
+        readinessProbe:
+         tcpSocket:
+           port: 8081
+         initialDelaySeconds: 5
+         periodSeconds: 3
